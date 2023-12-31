@@ -1,4 +1,5 @@
-# Measurement-Values-System
+# PyMeasure
+As known as BestMeasure, Measurement-Values-System
 
 A convenient library written in Python for performing arithmetic operations with numbers with units of measurement. 
 
