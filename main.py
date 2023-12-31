@@ -2,13 +2,7 @@ class Measurement:
     __slots__ = ('meass',)
 
     def __init__(self, **init_meass):
-        self.meass = init_meass
-        self.zerclean()
-
-    def zerclean(self):
-        for meas, val in self.meass.copy().items():
-            if val == 0:
-                self.meass.pop(meas)
+        self.meass = {meas: val for meas, val in init_meass.items() if val != 0}
 
     def __operate__(self, other: "Measurement", type_op: int) -> "Measurement":
         new_meass: dict[str, int] = self.meass.copy()
@@ -24,10 +18,7 @@ class Measurement:
         return self.__operate__(other, -1)
 
     def __pow__(self, power: int) -> "Measurement":
-        new_meass = self.meass.copy()
-
-        for key in self.meass.keys():
-            new_meass[key] *= power
+        new_meass = {key: val * power for key, val in self.meass.items()}
         return Measurement(**new_meass)
 
     def __eq__(self, other: "Measurement"):
