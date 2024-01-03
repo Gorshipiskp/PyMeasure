@@ -31,12 +31,17 @@ class Measurement:
         return self.meass != other.meass
 
     def __latex__(self) -> str:
-        srtd: list[str] = sorted(self.meass.keys(), key=self.meass.get, reverse=True)
-        return f"""{f' {chr(92)}cdot '.join(f'{el}{f"^{{{self.meass[el]}}}" if self.meass[el] != 1 else ""}' for el in srtd)}"""
+        srtd_pos = (i for i in self.meass.keys() if self.meass[i] > 0)
+        srtd_neg = sorted([i for i in self.meass.keys() if self.meass[i] < 0], key=self.meass.get, reverse=True)
+
+        srtd_positives = f' {chr(92)}cdot '.join(f'{el}{f"^{{{self.meass[el]}}}" if self.meass[el] != 1 else ""}' for el in srtd_pos)
+        srtd_negatives = f' {chr(92)}cdot '.join(f'{el}{f"^{{{-self.meass[el]}}}" if self.meass[el] != 1 else ""}' for el in srtd_neg)
+
+        return f"{chr(92)}small{chr(92)}frac{{{srtd_positives}}}{{{srtd_negatives}}}"
 
     def __str__(self) -> str:
         srtd: list[str] = sorted(self.meass.keys(), key=self.meass.get, reverse=True)
-        return f"""{' * '.join(f'{el}{f"^{self.meass[el]}" if self.meass[el] != 1 else ""}' for el in srtd)}"""
+        return ' * '.join(f'{el}{f"^{self.meass[el]}" if self.meass[el] != 1 else ""}' for el in srtd)
 
     def __repr__(self) -> str:
         return f"M{self.meass}"
