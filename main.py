@@ -1,10 +1,13 @@
+from typing import Literal
+
+
 class Measurement:
-    __slots__ = ('meass',)
+    __slots__: tuple[str] = ('meass',)
 
-    def __init__(self, **init_meass):
-        self.meass = {meas: val for meas, val in init_meass.items() if val != 0}
+    def __init__(self, **init_meass) -> None:
+        self.meass: dict[str, int] = {meas: val for meas, val in init_meass.items() if val != 0}
 
-    def __operate__(self, other: "Measurement", type_op: int) -> "Measurement":
+    def __operate__(self, other: "Measurement", type_op: Literal[1, -1]) -> "Measurement":
         new_meass: dict[str, int] = self.meass.copy()
 
         for meas, val in other.meass.items():
@@ -18,21 +21,21 @@ class Measurement:
         return self.__operate__(other, -1)
 
     def __pow__(self, power: int) -> "Measurement":
-        new_meass = {key: val * power for key, val in self.meass.items()}
+        new_meass: dict[str, int] = {key: val * power for key, val in self.meass.items()}
         return Measurement(**new_meass)
 
-    def __eq__(self, other: "Measurement"):
+    def __eq__(self, other: "Measurement") -> bool:
         return self.meass == other.meass
 
-    def __ne__(self, other: "Measurement"):
+    def __ne__(self, other: "Measurement") -> bool:
         return self.meass != other.meass
 
     def __latex__(self) -> str:
-        srtd = sorted(self.meass.keys(), key=self.meass.get, reverse=True)
+        srtd: list[str] = sorted(self.meass.keys(), key=self.meass.get, reverse=True)
         return f"""{f' {chr(92)}cdot '.join(f'{el}{f"^{{{self.meass[el]}}}" if self.meass[el] != 1 else ""}' for el in srtd)}"""
 
     def __str__(self) -> str:
-        srtd = sorted(self.meass.keys(), key=self.meass.get, reverse=True)
+        srtd: list[str] = sorted(self.meass.keys(), key=self.meass.get, reverse=True)
         return f"""{' * '.join(f'{el}{f"^{self.meass[el]}" if self.meass[el] != 1 else ""}' for el in srtd)}"""
 
     def __repr__(self) -> str:
@@ -40,11 +43,11 @@ class Measurement:
 
 
 class MeasNum:
-    __slots__ = ('meas', 'val')
+    __slots__: tuple[str] = ('meas', 'val')
 
     def __init__(self, val: int | float, **init_meass) -> None:
-        self.meas = Measurement(**init_meass)
-        self.val = val
+        self.meas: Measurement = Measurement(**init_meass)
+        self.val: int | float = val
 
     def __add__(self, other: "MeasNum") -> "MeasNum":
         assert other.meas == self.meas, ValueError("Addition error – The units of the operands do not match")
@@ -64,10 +67,10 @@ class MeasNum:
     def __pow__(self, power: int) -> "MeasNum":
         return MeasNum(self.val ** power, **(self.meas ** power).meass)
 
-    def __eq__(self, other: "MeasNum"):
+    def __eq__(self, other: "MeasNum") -> bool:
         return self.meas == other.meas and self.val == other.val
 
-    def __ne__(self, other: "MeasNum"):
+    def __ne__(self, other: "MeasNum") -> bool:
         return self.meas != other.meas and self.val != other.val
 
     def __str__(self) -> str:
